@@ -8,7 +8,9 @@ Graph Convolutional Networks涉及到两个很重要的概念：graph和Convolut
 
 - 由于傅里叶充当了友谊的桥梁，此时卷积和Graph终于搭上了线。
 
-论文链接[Semi-supervised Classification with Graph Convolutional Networks](https://arxiv.org/pdf/1609.02907.pdf)
+论文链接：[Semi-supervised Classification with Graph Convolutional Networks](https://arxiv.org/pdf/1609.02907.pdf)
+
+博客地址：https://www.jianshu.com/p/35212baf6671
 
 * * *
 ### 拉普拉斯矩阵与GCN
