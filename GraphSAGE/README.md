@@ -40,7 +40,7 @@ GraphSAGE是一种在超大规模图上利用节点的属性信息高效产生�
 
   
 
-###GraphSAGE聚合函数
+### GraphSAGE聚合函数
 
 ***
 
@@ -62,7 +62,7 @@ GraphSAGE是一种在超大规模图上利用节点的属性信息高效产生�
 
   
 
-###PPI数据集
+### PPI数据集
 
 ---
 
@@ -71,7 +71,7 @@ PPI(Protein-protein interaction networks)数据集由24个对应人体不同组�
 
 
 
-###开发环境
+### 开发环境
 
 ***
 
@@ -97,7 +97,7 @@ PPI(Protein-protein interaction networks)数据集由24个对应人体不同组�
 	
 
 ```
-###构建模型
+### 构建模型
 * 导入相关库
 
   ***
