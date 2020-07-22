@@ -1,6 +1,6 @@
 ### Tensorflow-GraphSAGE-Tutorial
 
-***
+---
 
 本教程将带你一起在PPI（蛋白质网络）数据集上用Tensorflow搭建GraphSAGE框架中的MaxPooling聚合模型实现有监督的图分类学习任务。完整代码可以在Github中进行下载：https://github.com/wangyouze/GNN-algorithms/tree/master/GraphSAGE
 
@@ -183,6 +183,9 @@ MaxPooling 聚合函数是一个带有max-pooling操作的单层神经网络。�
     neighbor_x = tf.gather(x, col)
 ```
 row是Graph中的源节点序列，low是Graph中的目标节点序列，x是Graph中的节点特征矩阵。tf.gather是根据节点序列从节点特征矩阵中选取对应的节点特征堆叠形成所有邻居节点组成的特征矩阵。tf.gather的具体操作如下：![](tf_gather.jpg)
+
+
+
 得到加权后的邻居节点特征向量
 
 ```python
