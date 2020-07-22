@@ -28,7 +28,9 @@ GraphSAGE是一种在超大规模图上利用节点的属性信息高效产生�
 
 * Pooling Aggregator
 
-  先对中心节点的邻居节点表示向量进行一次非线性变换，然后对变换后的邻居表示向量进行池化操作（mean pooling或者max pooling）,最后将pooling所得结果与目标节点的特征表示分别进行非线性变换，并将所得结果进行拼接或者相加从而得到目标节点在该层的向量表示。
+  ![Pooling_Aggregator](pooling_graphsage.png)
+
+  先对中心节点的邻居节点表示向量进行一次非线性变换，然后对变换后的邻居表示向量进行池化操作（mean pooling或者max pooling）,最后将pooling所得结果与中心节点的特征表示分别进行非线性变换，并将所得结果进行拼接或者相加从而得到中心节点在该层的向量表示。
 
 * LSTM Aggregator
   将中心节点的邻居节点随机打乱作为输入序列，将所得向量表示与中心节点的向量表示分别经过非线性变换后拼接得到中心节点在该层的向量表示。LSTM本身是用于序列数据，因此输入到LSTM中的邻居节点需要随机打乱顺序。
@@ -193,7 +195,7 @@ row是Graph中的源节点序列，low是Graph中的目标节点序列，x是Gra
 ```python
     neighbor_x = gcn_mapper(repeated_x, neighbor_x, edge_weight=edge_weight)
 ```
-在进行max-pooling操作之前将所有邻居节点的特征向量输入全连接网络计算邻居节点的特征表示。（可以将MLP看做是一组函数）
+在进行max-pooling操作之前将所有邻居节点的特征向量输入全连接网络计算邻居节点的特征表示。（将MLP看做是一组函数）
 ```python
     neighbor_x = dropout(neighbor_x)
     h = neighbor_x @ mlp_kernel
