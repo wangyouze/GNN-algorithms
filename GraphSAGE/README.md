@@ -2,7 +2,7 @@
 
 ***
 
-本教程将带你一起在PPI（蛋白质网络）数据集上用Tensorflow搭建GraphSAGE框架中的MaxPooling聚合模型进行有监督的图分类任务学习。完整代码可以在Github中进行下载：https://github.com/wangyouze/GNN-algorithms/tree/master/GraphSAGE
+本教程将带你一起在PPI（蛋白质网络）数据集上用Tensorflow搭建GraphSAGE框架中的MaxPooling聚合模型实现有监督的图分类学习任务。完整代码可以在Github中进行下载：https://github.com/wangyouze/GNN-algorithms/tree/master/GraphSAGE
 
 
 
@@ -12,9 +12,26 @@
 
 GraphSAGE是一种在超大规模图上利用节点的属性信息高效产生未知节点特征表示的归纳式学习框架。GraphSAGE可以被用来生成节点的低维向量表示，尤其对于是那些具有丰富节点属性的Graph效果显著。目前大多数的框架都是直推式学习模型，也就是说只能够在一张固定的Graph上进行表示学习，这些模型既不能够对那些在训练中未见的节点进行有效的向量表示，也不能够跨图进行节点表示学习。GraphSAGE作为一种归纳式的表示学习框架能够利用节点丰富的属性信息有效地生成未知节点的特征表示。
 
-![](D:\GNNs教程\GNN-algorithms\GraphSAGE\graphsage.jpg)
+![](graphsage.jpg)
 
-**GraphSAGE的核心思想是通过学习一个对邻居节点进行聚合表示的函数来产生中心节点的特征表示而不是学习节点本身的embedding**。它既可以进行有监督学习也可以进行无监督学习，下面我们将以MaxPooling聚合方法为例构建GraphSAGE模型进行有监督学习下的分类任务。
+**GraphSAGE的核心思想是通过学习一个对邻居节点进行聚合表示的函数来产生中心节点的特征表示而不是学习节点本身的embedding**。它既可以进行有监督学习也可以进行无监督学习，GraphSAGE中的聚合函数有以下几种：
+
+* Mean Aggregator
+
+  Mean 聚合近乎等价于GCN中的卷积传播操作，具体来说就是对中心节点的邻居节点的特征向量进行求均值操作，然后和中心节点特征向量进行拼接，中间要经过两次非线性变换。
+
+* GCN Aggregator
+
+  GCN的归纳式学习版本。
+
+* Pooling Aggregator
+
+  先对中心节点的邻居节点表示向量进行一次非线性变换，然后对变换后的邻居表示向量进行池化操作（mean pooling或者max pooling）,最后将pooling所得结果与目标节点的特征表示分别进行非线性变换，并将所得结果进行拼接或者相加从而得到目标节点在该层的向量表示。
+
+* LSTM Aggregator
+  将中心节点的邻居节点随机打乱作为输入序列，将所得向量表示与中心节点的向量表示分别经过非线性变换后拼接得到中心节点在该层的向量表示。LSTM本身是用于序列数据，因此输入到LSTM中的邻居节点需要随机打乱顺序。
+
+下面我们将以MaxPooling聚合方法为例构建GraphSAGE模型进行有监督学习下的分类任务。
 
 * 教程中完整的代码链接：https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_graph_sage.py
 
@@ -23,10 +40,8 @@ GraphSAGE是一种在超大规模图上利用节点的属性信息高效产生�
   
 
 ### 教程目录
-
 ***
 
-* GraphSAGE中的聚合方法
 
 * 数据集PPI
 
@@ -34,34 +49,13 @@ GraphSAGE是一种在超大规模图上利用节点的属性信息高效产生�
 
 * 模型构建
 
+* max_pooling_graph_sage层
+
 * GraphSAGE训练
 
 * GraphSAGE评估
 
   
-
-### GraphSAGE聚合函数
-
-***
-
-* Mean Aggregator
-
-  Mean 聚合近乎等价于GCN中的卷积传播操作，具体来说就是对目标节点的邻居节点的特征向量进行求均值操作，然后和目标节点特征向量进行拼接，中间要经过两次非线性变换。
-
-* GCN Aggregator
-
-  GCN的归纳式学习版本。	
-
-* Pooling Aggregator
-
-  先对目标节点的邻居节点表示向量进行一次非线性变换，然后对变换后的邻居表示向量进行池化操作（mean pooling或者max pooling）,最后将pooling所得结果与目标节点的特征表示分别进行非线性变换，并将所得结果进行拼接或者相加从而得到目标节点在该层的向量表示。
-
-* LSTM Aggregator
-
-  将目标节点的邻居节点随机打乱作为输入序列，将所得向量表示与目标节点的向量表示分别经过非线性变换后拼接得到目标节点在该层的向量表示。LSTM本身是用于序列数据，因此输入到LSTM中的邻居节点需要随机打乱顺序。
-
-  
-
 ### PPI数据集
 
 ---
@@ -78,7 +72,7 @@ PPI(Protein-protein interaction networks)数据集由24个对应人体不同组�
 * 操作系统: Windows / Linux / Mac OS
 * Python 版本: >= 3.5
 * 依赖包:
-  - tf_geometric（一个机遇Tensorflow的GNN库）
+  - tf_geometric（一个基于Tensorflow的GNN库）
 
 根据你的环境（是否已安装TensorFlow、是否需要GPU）从下面选择一条安装命令即可一键安装所有Python依赖:
 
@@ -131,10 +125,10 @@ PPI(Protein-protein interaction networks)数据集由24个对应人体不同组�
 
   
 
-* 对每个节点的邻居节点进行采样
+* 对Graph中的每个节点的邻居节点进行采样
 
   ***
-  由于每个节点的邻居节点的数目不一，出于计算效率的考虑，我们队每个节点采样一定数量的邻居节点作为之后聚合信息时的节点。设定采样数量为num_sample，如果邻居节点的数量大于num_sample，那我们采用无放回采样。如果邻居节点的数量小于num_sample，我们采用有放回采样，直到所采样的邻居节点数量达da到num_sample。
+  由于每个节点的邻居节点的数目不一，出于计算效率的考虑，我们对每个节点采样一定数量的邻居节点作为之后聚合领域信息时的邻居节点。设定采样数量为num_sample，如果邻居节点的数量大于num_sample，那我们采用无放回采样。如果邻居节点的数量小于num_sample，我们采用有放回采样，直到所采样的邻居节点数量达到num_sample。RandomNeighborSampler提前对每张图进行预处理，将相关的图信息与各自的图绑定。
 
   ```python
   # traverse all graphs
@@ -144,7 +138,7 @@ PPI(Protein-protein interaction networks)数据集由24个对应人体不同组�
   
   ```
 
-  需要注意的是，由于模型可能会同时作用在多个图上，为了保证邻居节点在抽样结束之后不发生混淆，我们将抽样结果与每个Graph对象绑定在一起，即将抽样信息保存在“cache"这个缓存字典之中。
+  需要注意的是，由于模型可能会同时作用在多个图上，为了保证每张图的邻居节点在抽样结束之后不发生混淆，我们将抽样结果与每个Graph对象绑定在一起，即将抽样信息保存在“cache"这个缓存字典之中。
 
 * 采用两层MaxPooling聚合函数来聚合Graph中邻居节点蕴含的信息。
 
@@ -176,18 +170,21 @@ PPI(Protein-protein interaction networks)数据集由24个对应人体不同组�
       
   ```
 
-  两层MaxPooling聚合函数的邻居节点采样数目分别为25和10.由于Dropout层在训练和预测阶段的状态不同，为此，我们通过参数training来决定是否需要Dropout发挥作用。
+  两层MaxPooling聚合函数的邻居节点采样数目分别为25和10。之前我们已经通过RandomNeighborSampler为每张图处理好了相关的图结构信息，现在只需要根据每层的抽样数目num_sampled_neighbors分别进行抽样（neighbor_sample.sample()）。将抽样所得的边sampled_edge_indext，边的权重sampled_edge_weights以及节点的特征向量x输入到GrapSAGE模型中。由于Dropout层在训练和预测阶段的状态不同，为此，我们通过参数training来决定是否需要Dropout发挥作用。
 
-### MaxPoolingGraphSAGE
+  接下来我们将简单地介绍模型的具体实现层[max_pooling_graph_sage](https://github.com/wangyouze/tf_geometric/blob/sage/tf_geometric/nn/conv/graph_sage.py)。
+
+### max_pooling_graph_sage
 ***
-MaxPooling 聚合函数是一个带有max-pooling操作的单层神经网络。我们首先传递每个目标节点的邻居节点向量到一个非线性层中。由于我们的tf_geometric是基于边表结构进行相关Graph操作，所以我们先通过tf.gather转换得到所有节点邻居节点的特征向量组成的特征矩阵
+MaxPooling 聚合函数是一个带有max-pooling操作的单层神经网络。我们首先传递每个中心节点的邻居节点向量到一个非线性层中。由于我们的tf_geometric是基于边表结构进行相关Graph操作，所以我们先通过tf.gather转换得到所有节点的邻居节点的特征向量组成的特征矩阵
 ```python
 	row, col = edge_index
     repeated_x = tf.gather(x, row)
     neighbor_x = tf.gather(x, col)
 ```
-row是Graph中的源节点序列，low是Graph中的目标节点序列，x是Graph中的节点特征矩阵。tf.gather是根据节点序列从节点特征矩阵中选取对应的节点特征堆叠形成所有邻居节点组成的特征矩阵。tf.gather的具体操作如下：![](D:\GNNs教程\GNN-algorithms\GraphSAGE\tf_gather.jpg)
+row是Graph中的源节点序列，low是Graph中的目标节点序列，x是Graph中的节点特征矩阵。tf.gather是根据节点序列从节点特征矩阵中选取对应的节点特征堆叠形成所有邻居节点组成的特征矩阵。tf.gather的具体操作如下：![](tf_gather.jpg)
 得到加权后的邻居节点特征向量
+
 ```python
     neighbor_x = gcn_mapper(repeated_x, neighbor_x, edge_weight=edge_weight)
 ```
@@ -202,7 +199,7 @@ row是Graph中的源节点序列，low是Graph中的目标节点序列，x是Gra
         h = activation(h)
 
 ```
-对邻居节点特征向量进行max-pooling操作，然后将所得向量与经过变换的源节点特征向量拼接输出。
+对邻居节点特征向量进行max-pooling操作，然后将所得向量与经过变换的中心节点特征向量拼接输出。
 一个理想的聚合方法就应该是简单，可学习且对称的。换句话说，一个理想的aggregator应该学会如何聚合邻居节点的特征表示，并对邻居节点的顺序不敏感，同时不会造成巨大的训练开销。
 
 ```python
@@ -267,7 +264,7 @@ for epoch in tqdm(range(10)):
 ### GrapSAGE评估
 
 ***
-我们使用F1 Score来评估MaxPoolingGraphSAGE聚合邻居节点信息进行分类任务的性能。通过将测试集中的Graph(训练阶段unseen)输入到MaxPoolingGraphSAGE,将预测阶段与相应的labels转换为一维数组，输入到sklearn中的f1_score方法，得到F1_Score.
+我们使用F1 Score来评估MaxPoolingGraphSAGE聚合邻居节点信息进行分类任务的性能。将测试集中的图(训练阶段unseen)输入到经过训练的MaxPoolingGraphSAGE得到预测结果，最后预测结果与其对应的labels转换为一维数组，输入到sklearn中的f1_score方法，得到F1_Score.
 ```python
 def evaluate(graphs):
     y_preds = []
