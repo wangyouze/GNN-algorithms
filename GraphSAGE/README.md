@@ -95,7 +95,12 @@ PPI(Protein-protein interaction networks)数据集由24个对应人体不同组�
 	
 
 ```
+教程使用的核心库是tf_geometric，一个基于TensorFlow的GNN库。tf_geometric的详细教程可以在其Github主页上查询：
+
+* https://github.com/CrawlScript/tf_geometric
+
 ### 构建模型
+
 * 导入相关库
 
   ***
