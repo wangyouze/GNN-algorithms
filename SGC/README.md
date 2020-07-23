@@ -1,4 +1,4 @@
-###Tensorflow-SGC-Tutorial
+### Tensorflow-SGC-Tutorial
 
 ***
 
@@ -147,7 +147,7 @@ h = h @ kernel
   model = SGC(num_classes, k=2)
   ```
 
-## SGC训练
+### SGC训练
 
 模型的训练与其他基于Tensorflow框架的模型训练基本一致，主要步骤有定义优化器，计算误差与梯度，反向传播等。SGC模型K阶的计算结果由softmax映射到（0,1）直接进行多分类任务。
 
