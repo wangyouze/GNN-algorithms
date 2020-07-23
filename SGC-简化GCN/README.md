@@ -33,7 +33,7 @@ SGC是GCN的变体之一，全称[Simplifying Graph Convolutional Networks](http
 
 SGC中的![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?S%5Ek)可以提前计算，大大减少了计算量。
 
-通过以上的对比，我们可以清晰的认知到二者之间的异同点，下面我们将基于tf_geometric实现SGC模型（SGC以集成到GNN库tf_geometric中）。
+通过以上的对比，我们可以清晰的认识到二者之间的异同点，下面我们将基于tf_geometric实现SGC模型（SGC以集成到GNN库tf_geometric中）。
 
 教程中完整的代码链接：
 

@@ -2,7 +2,7 @@
 
 ---
 
-本教程将带你一起在PPI（蛋白质网络）数据集上用Tensorflow搭建GraphSAGE框架中的MaxPooling聚合模型实现有监督的图分类学习任务。完整代码可以在Github中进行下载：https://github.com/wangyouze/GNN-algorithms/tree/master/GraphSAGE
+本教程将带你一起在PPI（蛋白质网络）数据集上用Tensorflow搭建GraphSAGE框架中的MaxPooling聚合模型实现有监督下的图节点标签预测任务。完整代码可以在Github中进行下载：https://github.com/wangyouze/GNN-algorithms/tree/master/GraphSAGE
 
 
 
@@ -53,7 +53,7 @@ GraphSAGE是一种在超大规模图上利用节点的属性信息高效产生�
 
 * 模型构建
 
-* max_pooling_graph_sage层
+* max_pooling_graph_sage的具体实现
 
 * GraphSAGE训练
 
@@ -64,7 +64,7 @@ GraphSAGE是一种在超大规模图上利用节点的属性信息高效产生�
 
 ---
 
-PPI(Protein-protein interaction networks)数据集由24个对应人体不同组织的图组成。其中20个图用于训练，2个图用于验证，2个图用于测试。平均每张图有2372个节点，每个节点的特征维度是50。测试集中的图与训练集中的图没有交叉，即在训练阶段测试集中的图是不可见的。每个节点拥有多种标签，标签的种类总共有121种。
+PPI(Protein-protein interaction networks)数据集由24个对应人体不同组织的图组成。其中20个图用于训练，2个图用于验证，2个图用于测试。平均每张图有2372个节点，每个节点有50个特征。测试集中的图与训练集中的图没有交叉，即在训练阶段测试集中的图是不可见的。每个节点拥有多种标签，标签的种类总共有121种。
 
 
 
@@ -105,7 +105,7 @@ PPI(Protein-protein interaction networks)数据集由24个对应人体不同组�
 
   ***
 
-  本教程使用的核心库是[tf_geometric](https://github.com/CrawlScript/tf_geometric/tree/master)，借助这个GNN库我们可以方便的对数据集进行导入，预处理图数据以及搭建图神经网络。另外我们还引用了tf.keras.layers中的Dropout用来缓解过拟合以及sklearn中的f1_score函数作为评价指标。
+  本教程使用的核心库是[tf_geometric](https://github.com/CrawlScript/tf_geometric/tree/master)，借助这个GNN库我们可以方便的对数据集进行导入，预处理图数据以及搭建图神经网络。另外我们还引用了tf.keras.layers中的Dropout用来缓解过拟合以及sklearn中的micro f1_score函数作为评价指标。
 
   ```python
   # coding=utf-8
@@ -183,7 +183,7 @@ PPI(Protein-protein interaction networks)数据集由24个对应人体不同组�
 
   接下来我们将简单地介绍模型的具体实现层[max_pooling_graph_sage](https://github.com/wangyouze/tf_geometric/blob/sage/tf_geometric/nn/conv/graph_sage.py)。
 
-### max_pooling_graph_sage
+### max_pooling_graph_sage的具体实现
 ***
 MaxPooling 聚合函数是一个带有max-pooling操作的单层神经网络。我们首先传递每个中心节点的邻居节点向量到一个非线性层中。由于我们的tf_geometric是基于边表结构进行相关Graph操作，所以我们先通过tf.gather转换得到所有节点的邻居节点的特征向量组成的特征矩阵
 ```python
