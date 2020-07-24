@@ -9,8 +9,10 @@ GCN作为一种经典的图神经网络模型，已经成为了诸多新手入�
 ***
 
 SGC是GCN的变体之一，全称[Simplifying Graph Convolutional Networks](https://arxiv.org/pdf/1902.07153.pdf)，论文发表在ICML2019上。相比于GCN，SGC通过消除GCN层之间的非线性，将非线性的GCN转变为一个简单的线性模型，减小了模型复杂度，在很多任务上比GCN以及其他GNN模型更加高效。
+<div align=center>
+	<img src="SGC.png" width="">
+</div>
 
-![sgc模型图](SGC.png)
 
 * GCN做节点分类任务时：
 
