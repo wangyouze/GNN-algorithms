@@ -26,19 +26,21 @@
 
   第二代GCN直接对拉普拉斯矩阵进行变换，不再需要特征分解这一耗时大户。
 
-* Chebnet在第二代GCN的基础上用ChebShev多项式展开对卷积核进行近似，即令![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cbegin%7Bcases%7D%20g_%20%5Ctheta%20%28%5CLambda%20%29%20%5Capprox%20%5Csum_%7Bk%3D0%7D%5E%7BK-1%7D%5Ctheta%20_%7Bk%7DT_k%28%5Chat%20%5CLambda%29%5C%5C%20%5Chat%20%5CLambda%20%3D%20%5Cfrac%7B2%7D%7B%5Clambda%20_%7Bmax%7D%7D%5CLambda%20-%20I_N%20%5Cend%7Bcases%7D)
+* ChebNet在第二代GCN的基础上用ChebShev多项式展开对卷积核进行近似，即令![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cbegin%7Bcases%7D%20g_%20%5Ctheta%20%28%5CLambda%20%29%20%5Capprox%20%5Csum_%7Bk%3D0%7D%5E%7BK-1%7D%5Ctheta%20_%7Bk%7DT_k%28%5Chat%20%5CLambda%29%5C%5C%20%5Chat%20%5CLambda%20%3D%20%5Cfrac%7B2%7D%7B%5Clambda%20_%7Bmax%7D%7D%5CLambda%20-%20I_N%20%5Cend%7Bcases%7D)
 
   切比雪夫多项式的递归定义：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cbegin%7Bcases%7D%20T_0%28x%29%20%3D%201%5C%5C%20T_1%28x%29%20%3D%20x%5C%5C%20T_%7Bn&plus;1%7D%28x%29%20%3D%202xT_n%28x%29%20-%20T_%7Bn-1%7D%28x%29%20%5Cend%7Bcases%7D)
 
   这样有两个好处：
 
-  1. 卷积核的参数从原先的n个减少到k个，从原先的全局卷积变为现在的局部卷积，即将距离中心节点k-hop的节点作为邻居节点。
+  1. 卷积核的参数从原先一代GCN中的n个减少到k个，从原先的全局卷积变为现在的局部卷积，即将距离中心节点k-hop的节点作为邻居节点。
 
   2. 通过切比雪夫多项式的迭代定义降低了计算复杂度。
 
   因此切比雪夫图卷积公式变为：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cbegin%7Bcases%7D%20y%20%3D%20%5Csigma%20%28%5Csum_%7Bk%3D0%7D%5EK%5Ctheta%20_%7Bk%7DT_k%28%5Chat%20L%29x%29%5C%5C%20%5Chat%20L%20%3D%20%5Cfrac%7B2%7D%7B%5Clambda%20_%7Bmax%7D%7DL%20-%20I_N%20%5Cend%7Bcases%7D)
 
-对上述推导过程不清楚的人可以参考我的博客：https://www.jianshu.com/p/35212baf6671
+**对上述推导过程不清楚的人可以参考我的博客**：https://www.jianshu.com/p/35212baf6671
+
+教程完整代码链接：https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_chebnet.py
 
 论文地址：https://arxiv.org/pdf/1606.09375.pdf
 
@@ -254,5 +256,9 @@ step = 3	loss = 1.2625869512557983	valid_acc = 0.7720000147819519	best_test_acc 
 step = 100	loss = 0.07698118686676025	valid_acc = 0.7940000295639038	best_test_acc = 0.8080000281333923
 ```
 
+### 完整代码
 
+教程中的完整代码链接：
+
+- demo_chebnet.py:https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_chebnet.py
 

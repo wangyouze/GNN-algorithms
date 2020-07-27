@@ -16,11 +16,11 @@ GCN通过图的拉普拉斯矩阵来聚合邻居节点的特征信息，这种�
 
 GAT中的attention是self-attention，即Q(Query)，K(Key)，V(value)三个矩阵均来自统一输入。和所有的Attention机制一样，GAT的计算也分两步走：
 
-1. 计算注意力系数。对于中心节点，我们需要逐个计算它与它的邻居节点之间的注意力系数：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?e_%7Bij%7D%20%3D%20a%28%5BWh_i%20%5Cleft%20%7C%20%5Cright%20%7CWh_j%5D%29%2Cj%20%5Cin%20N_i)。具体来说，首先我们要计算Q与K之间的点乘，然后为了防止其结果过大，会除以一个尺度 ![[公式]](https://www.zhihu.com/equation?tex=%5Csqrt%7Bd_k%7D) ，其中 ![[公式]](https://www.zhihu.com/equation?tex=d_k) 为一个query（key向量）的维度。再利用Softmax操作将其结果归一化为概率分布。该操作可以表示为 ![](https://latex.codecogs.com/gif.latex?%5Calpha%20_%7Bij%7D%20%3D%20softmax%28%5Cfrac%7BQK%5ET%7D%7B%5Csqrt%20d_k%7D%29)。
+1. 计算注意力系数。对于中心节点，我们需要逐个计算它与它的邻居节点之间的注意力系数：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?e_%7Bij%7D%20%3D%20a%28%5BWh_i%20%5Cleft%20%7C%20%5Cright%20%7CWh_j%5D%29%2Cj%20%5Cin%20N_i)。具体来说，首先我们要计算中心节点Q向量与其邻居节点K向量之间的点乘，然后为了防止其结果过大，会除以一个尺度 ![[公式]](https://www.zhihu.com/equation?tex=%5Csqrt%7Bd_k%7D) ，其中 ![[公式]](https://www.zhihu.com/equation?tex=d_k) 为一个query（key向量）的维度。再利用Softmax操作将其结果归一化为概率分布。该操作可以表示为 ![](https://latex.codecogs.com/gif.latex?%5Calpha%20_%7Bij%7D%20%3D%20softmax%28%5Cfrac%7BQK%5ET%7D%7B%5Csqrt%20d_k%7D%29)。
 
-2. 通过加权求和的方式聚合节点信息。根据每个邻居节点对中心节点归一化后的注意力系数，对邻居节点的特征进行线性组合作为中心节点的特征表示：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?h_i%5E%7B%27%7D%20%3D%20%5Csigma%28%5Csum%20_%7Bj%5Cin%20N_i%7D%5Calpha_%7Bij%7DWh_j%29)
+2. 通过加权求和的方式聚合节点信息。根据每个邻居节点对中心节点归一化后的注意力系数，对邻居节点的特征V进行线性组合作为中心节点的特征表示：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?h_i%5E%7B%27%7D%20%3D%20%5Csigma%28%5Csum%20_%7Bj%5Cin%20N_i%7D%5Calpha_%7Bij%7DWh_j%29)
 
-   由于使用了multi-head attention，我们将K个head的下的节点表示进行拼接作为最终的节点表示：
+   由于使用了multi-head attention，我们将K个head下的节点表示进行拼接作为最终的节点表示：
 
 ![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?h_i%5E%7B%27%7D%20%3D%20%5Cleft%20%7C%20%5Cright%20%7C_%7Bk%3D1%7D%5EK%20%5Csigma%28%5Csum%20_%7Bj%5Cin%20N_i%7D%5Calpha_%7Bij%7D%5EkW%5Ekh_j%29)
 
@@ -77,36 +77,44 @@ pip install -U tf_geometric # 这会使用你自带的TensorFlow，注意你需�
 
 ***
 
-self.attention，计算中心节点与其邻居节点的注意力系数，Q,K,V都是来自节点特征向量X的不同变换。multi-head attention并行计算，最后对计算得到的attention_score进行softmax归一化操作。
+self.attention，计算中心节点与其邻居节点的注意力系数。首先添加自环。
 
 ```python
 	num_nodes = x.shape[0]
 
     # self-attention
     edge_index, edge_weight = add_self_loop_edge(edge_index, num_nodes)
+```
+row为中心节点序列，col为一阶邻居节点序列
 
+```python
     row, col = edge_index
+```
+将节点特征向量X通过不同的变换得到Q(Query)，K(Key)和V(value)向量。通过[tf.gather](![img](file:///C:\Users\ADMINI~1\AppData\Local\Temp\SGPicFaceTpBq\24208\3A2AC162.gif))得到中心节点的特征向量Q和相应的邻居节点的特征向量K。
 
+```python
     Q = query_activation(x @ query_kernel + query_bias)
     Q = tf.gather(Q, row)
-
+    
     K = key_activation(x @ key_kernel + key_bias)
     K = tf.gather(K, col)
-
+    
     V = x @ kernel
+```
+由于是multi-head attention，所以Q，K，V也需要划分为num_heads，即每一个head都有自己相应的Q，K，V。最后将Q，K矩阵相乘（每一个中心节点的特征向量与其邻居节点的特征向量相乘）得到的attention_score，通过segmen_softmax进行归一化操作。
+
+```python
 
     # xxxxx_ denotes the multi-head style stuff
     Q_ = tf.concat(tf.split(Q, num_heads, axis=-1), axis=0)
     K_ = tf.concat(tf.split(K, num_heads, axis=-1), axis=0)
     V_ = tf.concat(tf.split(V, num_heads, axis=-1), axis=0)
     edge_index_ = tf.concat([edge_index + i * num_nodes for i in range(num_heads)], axis=1)
-
+    
     att_score_ = tf.reduce_sum(Q_ * K_, axis=-1)
     normed_att_score_ = segment_softmax(att_score_, edge_index_[0], num_nodes * num_heads)
 ```
-
-将归一化后的attention系数当做边的权重更新节点特征。此时将同一个节点在每一个attention下的节点特征拼接输出。
-
+将归一化后的attention系数当做边的权重来对邻居节点进行加权求和操作，从而更新节点特征。由于是multi-head attention，所以将同一个节点在每一个attention下的节点特征拼接输出。
 ```python
 h_ = aggregate_neighbors(
         V_, edge_index_, normed_att_score_,
@@ -186,7 +194,7 @@ for step in range(2000):
         print("step = {}\tloss = {}\taccuracy = {}".format(step, loss, accuracy))
 ```
 
-* 用交叉熵损失函数计算模型损失。注意在加载Cora数据集的时候，返回值是整个图数据以及相应的train_mask,valid_mask,test_mask。TAGCN在训练的时候的输入时整个Graph，在计算损失的时候通过train_mask来计算模型在训练集上的迭代损失。因此，此时传入的mask_index是train_index。由于是多分类任务，需要将节点的标签转换为one-hot向量以便于模型输出的结果维度对应。由于图神经模型在小数据集上很容易就会疯狂拟合数据，所以这里用L2正则化缓解过拟合。
+* 用交叉熵损失函数计算模型损失。注意在加载Cora数据集的时候，返回值是整个图数据以及相应的train_mask,valid_mask,test_mask。GAT在训练的时候的输入是整个Graph，在计算损失的时候通过train_mask来计算模型在训练集上的迭代损失。因此，此时传入的mask_index是train_index。由于是多分类任务，需要将节点的标签转换为one-hot向量以便于模型输出的结果维度对应。由于图神经模型在小数据集上很容易就会疯狂拟合数据，所以这里用L2正则化缓解过拟合。
 
   ```python
   def compute_loss(logits, mask_index, vars):
@@ -207,7 +215,7 @@ for step in range(2000):
 
 ***
 
-在评估模型性能的时候我们只需传入valid_mask或者test_mask，通过tf.gather函数就可以拿出验证集或测试集在模型上的预测结果与真实标签，用keras自带的keras.metrics.Accuracy计算准确率。
+在评估模型性能的时候我们只需传入valid_mask或者test_mask，通过[tf.gather](https://www.tensorflow.org/api_docs/python/tf/gather)函数就可以拿出验证集或测试集在模型上的预测结果与真实标签，用keras自带的keras.metrics.Accuracy计算准确率。
 
 ```python
 def evaluate(mask):
@@ -238,3 +246,8 @@ step = 1160	loss = 0.7581816911697388	accuracy = 0.8019999861717224
 step = 1180	loss = 0.8362383842468262	accuracy = 0.8009999990463257
 ```
 
+### 完整代码
+
+***
+
+教程中完整代码链接：demo_gat.py:教程代码下载链接：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_gat.py
