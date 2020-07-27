@@ -1,5 +1,7 @@
 ### 前言
 
+<span style="color:red;">***由于GitHub目前不支持LaTeX，导致下面部分公式无法正常显示，有兴趣的童鞋可以转战我的博客：https://www.jianshu.com/p/35212baf6671***</span>
+
 Graph Convolutional Networks涉及到两个很重要的概念：graph和Convolution。传统的卷积方式在欧式数据空间中大展神威，但是在非欧式数据空间中却哑火，很重要的一个原因就是传统的卷积方式在非欧式的数据空间上无法保持“平移不变性”。为了能够将卷积推广到Graph等非欧式数据结构的拓扑图上，GCN横空出世。在深入理解GCN：$H^{(l+1)} = \hat{D} ^{-1/2}\hat{A} \hat{D} ^{-1/2}H^lW^l$的来龙去脉之前，我觉着我们有必要提前对以下概念有点印象：
 
 - 卷积和傅里叶变换本身存在着密不可分的关系。数学上的定义是两个函数的卷积等于各自傅里叶变换后的乘积的逆傅里叶变换。此时卷积与傅里叶变换产生了联系。
@@ -10,7 +12,7 @@ Graph Convolutional Networks涉及到两个很重要的概念：graph和Convolut
 
 论文链接[Semi-supervised Classification with Graph Convolutional Networks](https://arxiv.org/pdf/1609.02907.pdf)
 
-**由于GitHub目前不支持LaTeX，导致下面公式无法正常显示，有兴趣的童鞋可以转战我的博客：https://www.jianshu.com/p/35212baf6671**
+demo_gcn.py:https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_gcn.py
 
 * * *
 ### 拉普拉斯矩阵与GCN
