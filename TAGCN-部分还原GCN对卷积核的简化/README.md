@@ -2,7 +2,7 @@
 
 ***
 
-继上一节介绍了GCN的变体[SGC](https://github.com/wangyouze/GNN-algorithms/tree/master/SGC-%E7%AE%80%E5%8C%96GCN)，这一节我们继续介绍GCN的另外一个变体TAGCN。本教程将叫你如何用Tensorflow构建GCN的变体TAGCN模型进行节点分类任务。完整代码可在Github中下载：https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_tagcn.py
+继上一节介绍了GCN的变体[SGC](https://github.com/wangyouze/GNN-algorithms/tree/master/SGC-%E7%AE%80%E5%8C%96GCN)，这一节我们继续介绍GCN的另外一个变体TAGCN。本教程将叫你如何用Tensorflow构建GCN的变体TAGCN模型进行节点分类任务。完整代码可在Github中下载：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_tagcn.py
 
 ### TAGCN简介
 
@@ -14,7 +14,7 @@ TAGCN是GCN的变体之一，全称[TOPOLOGY ADAPTIVE GRAPH CONVOLUTIONAL NETWOR
 
 1. 对邻接矩阵进行归一化处理：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?A%20%3D%20D%5E%7B-0.5%7D%28I&plus;A%29D%5E%7B-0.5%7D)
 
-2. 多项式卷积核，![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?g_%7Bf%2Ck%7D%5E%7B%28l%29%7D)是多项式系数：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?G%5E%7B%28l%29%7D_f%20%3D%20%5Csum%20_%7Bk%3D0%7D%5EKg_%7Bf%2Ck%7D%5E%7B%28l%29%7DA%5Ek)
+2. 多项式卷积核，![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?g_%7Bf%2Ck%7D%5E%7B%28l%29%7D)是多项式系数，相比于GCN，TAGCN保留了超参数K：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?G%5E%7B%28l%29%7D_f%20%3D%20%5Csum%20_%7Bk%3D0%7D%5EKg_%7Bf%2Ck%7D%5E%7B%28l%29%7DA%5Ek)
 
 3. k个卷积核在图结构数据上提取特征，进行线性组合：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?y_f%5E%7B%28l%29%7D%20%3D%20G%5E%7B%28l%29%7D_fx_c%5E%7B%28l%29%7D%20&plus;%20b_f1_%7BN_l%7D)
 4. 仿照CNN结构，添加非线性操作：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?x_f%5E%7Bl&plus;1%7D%20%3D%20%5Csigma%28%7By_f%20%5E%7B%28l%29%7D%7D%29)
@@ -27,7 +27,7 @@ TAGCN是GCN的变体之一，全称[TOPOLOGY ADAPTIVE GRAPH CONVOLUTIONAL NETWOR
 
 ![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?y%5El_f%20%3D%20g%5El_%7Bf%2C1%7DAX%5El%20&plus;%20g%5El_%7Bf%2C2%7DA%5E2X%5El%20&plus;%20g%5El_%7Bf%2C3%7DA%5E3X%5El%20&plus;%20b_f1_%7BN_l%7D)
 
-* 教程完整代码链接：https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_tagcn.py
+* 教程完整代码链接：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_tagcn.py
 * 论文地址：https://arxiv.org/pdf/1710.10370.pdf
 
 ### 教程目录
@@ -229,4 +229,4 @@ step = 100	loss = 0.03561935946345329	valid_acc = 0.7960000038146973	best_test_a
 
 教程中的完整代码链接：
 
-* demo_tagcn.py:https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_tagcn.py
+* demo_tagcn.py：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_tagcn.py

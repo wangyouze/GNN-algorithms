@@ -2,7 +2,7 @@
 
 ***
 
-GCN作为一种经典的图神经网络模型，已经成为了诸多新手入门图神经网络的必学模型，而近些年对于GCN的各种魔改也层出不穷。本着爱屋及乌的目的，本教程将教你如何用Tensorflow构建GCN的变体SGC模型进行节点分类任务。完整的代码可在Github中下载：https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_sgc.py
+GCN作为一种经典的图神经网络模型，已经成为了诸多新手入门图神经网络的必学模型，而近些年对于GCN的各种魔改也层出不穷。本着爱屋及乌的目的，本教程将教你如何用Tensorflow构建GCN的变体SGC模型进行节点分类任务。完整的代码可在Github中下载：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_sgc.py
 
 ### SGC简介
 
@@ -39,7 +39,7 @@ SGC中的![This is the rendered form of the equation. You can not edit this dire
 
 教程中完整的代码链接：
 
-* demo_sgc.py:https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_sgc.py
+* demo_sgc.py：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_sgc.py
 * 论文地址：https://arxiv.org/pdf/1902.07153.pdf
 
 ### 教程目录
@@ -224,4 +224,4 @@ step = 100	loss = 0.967261791229248	valid_acc = 0.7919999957084656	test_acc = 0.
 
 教程中的完整代码链接：
 
-* demo_sgc.py:https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_sgc.py
+* demo_sgc.py：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_sgc.py

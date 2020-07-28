@@ -2,7 +2,7 @@
 
 ---
 
-本教程将带你一起在PPI（蛋白质网络）数据集上用Tensorflow搭建GraphSAGE框架中的MaxPooling聚合模型实现有监督下的图节点标签预测任务。完整代码可以在Github中进行下载：https://github.com/wangyouze/GNN-algorithms/tree/master/GraphSAGE
+本教程将带你一起在PPI（蛋白质网络）数据集上用Tensorflow搭建GraphSAGE框架中的MaxPooling聚合模型实现有监督下的图节点标签预测任务。完整代码可以在Github中进行下载：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_graph_sage.py
 
 
 
@@ -37,7 +37,7 @@ GraphSAGE是一种在超大规模图上利用节点的属性信息高效产生�
 
 下面我们将以MaxPooling聚合方法为例构建GraphSAGE模型进行有监督学习下的分类任务。
 
-* 教程中完整的代码链接：https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_graph_sage.py
+* 教程中完整的代码链接：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_graph_sage.py
 
 * 论文地址：https://arxiv.org/pdf/1706.02216.pdf
 
@@ -181,7 +181,7 @@ PPI(Protein-protein interaction networks)数据集由24个对应人体不同组�
 
   两层MaxPooling聚合函数的邻居节点采样数目分别为25和10。之前我们已经通过RandomNeighborSampler为每张图处理好了相关的图结构信息，现在只需要根据每层的抽样数目num_sampled_neighbors分别进行抽样（neighbor_sample.sample()）。将抽样所得的边sampled_edge_indext，边的权重sampled_edge_weights以及节点的特征向量x输入到GrapSAGE模型中。由于Dropout层在训练和预测阶段的状态不同，为此，我们通过参数training来决定是否需要Dropout发挥作用。
 
-  接下来我们将简单地介绍模型的具体实现层[max_pooling_graph_sage](https://github.com/wangyouze/tf_geometric/blob/sage/tf_geometric/nn/conv/graph_sage.py)。
+  接下来我们将简单地介绍模型的具体实现层[max_pooling_graph_sage](https://github.com/CrawlScript/tf_geometric/blob/master/tf_geometric/nn/conv/graph_sage.py)。
 
 ### max_pooling_graph_sage的具体实现
 ***
@@ -191,7 +191,7 @@ MaxPooling 聚合函数是一个带有max-pooling操作的单层神经网络。�
     repeated_x = tf.gather(x, row)
     neighbor_x = tf.gather(x, col)
 ```
-row是Graph中的源节点序列，low是Graph中的目标节点序列，x是Graph中的节点特征矩阵。tf.gather是根据节点序列从节点特征矩阵中选取对应的节点特征堆叠形成所有邻居节点组成的特征矩阵。tf.gather的具体操作如下：![](tf_gather.jpg)
+row是Graph中的源节点序列，low是Graph中的目标节点序列，x是Graph中的节点特征矩阵。tf.gather是根据节点序列从节点特征矩阵中选取对应的节点特征堆叠形成所有邻居节点组成的特征矩阵。[tf.gather](https://www.tensorflow.org/api_docs/python/tf/gather)的具体操作如下：![](tf_gather.jpg)
 
 
 
@@ -327,6 +327,6 @@ epoch = 10	test_f1_micro = 0.5964539684054789
 
 教程中的完整代码链接：
 
-* demo_graph_sage.py:https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_graph_sage.py
+* demo_graph_sage.py:https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_graph_sage.py
 
   

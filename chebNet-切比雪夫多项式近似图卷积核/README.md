@@ -40,7 +40,7 @@
 
 **对上述推导过程不清楚的人可以参考我的博客**：https://www.jianshu.com/p/35212baf6671
 
-教程完整代码链接：https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_chebnet.py
+教程完整代码链接：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_chebnet.py
 
 论文地址：https://arxiv.org/pdf/1606.09375.pdf
 
@@ -49,7 +49,7 @@
 ***
 
 * 开发环境
-* CheNet的实现
+* ChebNet的实现
 * 模型构建
 * ChebNet训练
 * ChebNet评估
@@ -89,15 +89,14 @@
 
 ***
 
-对图的邻接矩阵进行归一化处理，以及计算![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Chat%20L%20%3D%20%5Cfrac%7B2%7D%7B%5Clambda%20_%7Bmax%7D%7DL%20-%20I_N)
+对图的邻接矩阵进行归一化处理得到拉普拉斯矩阵（归一化的方式有![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cbegin%7Bcases%7D%20L%20%3D%20D%20-A%5C%5C%20L%5E%7Bsym%7D%20%3D%20D%5E%7B-1/2%7DLD%5E%7B-1/2%7D%5C%5C%20L%5E%7Brw%7D%20%3D%20D%5E%7B-1%7DL%20%5Cend%7Bcases%7D)），以及根据得到的归一化的拉普拉斯矩阵计算![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Chat%20L%20%3D%20%5Cfrac%7B2%7D%7B%5Clambda%20_%7Bmax%7D%7DL%20-%20I_N)。chebnet_norm_edge的具体实现请看[完整代码](https://github.com/CrawlScript/tf_geometric/blob/master/tf_geometric/nn/conv/chebnet.py)
 
 ```python
 num_nodes = x.shape[0]
-    norm_edge_index, norm_edge_weight = normalization(edge_index, num_nodes, edge_weight, lambda_max,
-                                                      normalization_type=normalization_type)
+norm_edge_index, norm_edge_weight = chebnet_norm_edge(edge_index, num_nodes, edge_weight, lambda_max, normalization_type=normalization_type)                                            
 ```
 
-根据切比雪夫多项式的迭代定义计算k阶
+利用切比雪夫多项式的迭代定义递推计算高阶项（节省了大量运算），最后输出模型结果，即多项式和![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?y%20%3D%20%5Csigma%28%5Csum_%7Bk%3D0%7D%5EK%5Ctheta_kT_k%28%5Chat%20L%29x%29)计算loss或者评估模型效果。
 
 ```python
 	T0_x = x
@@ -109,8 +108,7 @@ num_nodes = x.shape[0]
         out += tf.matmul(T1_x, kernel[1])
 
     for i in range(2, K):
-        T2_x = aggregate_neighbors(T1_x, norm_edge_index, norm_edge_weight, gcn_mapper, sum_reducer,
-                                   identity_updater)  ##L^T_{k-1}(L^)
+        T2_x = aggregate_neighbors(T1_x, norm_edge_index, norm_edge_weight, gcn_mapper, sum_reducer, identity_updater)  ##L^T_{k-1}(L^)
         T2_x = 2.0 * T2_x - T0_x
         out += tf.matmul(T2_x, kernel[i])
 
@@ -260,5 +258,5 @@ step = 100	loss = 0.07698118686676025	valid_acc = 0.7940000295639038	best_test_a
 
 教程中的完整代码链接：
 
-- demo_chebnet.py:https://github.com/wangyouze/tf_geometric/blob/sage/demo/demo_chebnet.py
+- demo_chebnet.py:https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_chebnet.py
 
