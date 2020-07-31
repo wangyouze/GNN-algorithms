@@ -30,7 +30,9 @@ How Powerful are Graph Neural Networks?相信有很多人会和我一样在边�
 	
 	WL_test迭代过程如下图所示：
 
+<div align=center>
 <img src="WL_test.jpg" width = "600" height = "500" alt="WL_test迭代过程" align=center />
+</div>
 
    		(此图引用自知乎陈乐天的文章《Graph Neural Networks多强大？》阅读笔记 - 陈乐天的文章 - 知乎 https://zhuanlan.zhihu.com/p/62006729，如有侵权，请联系删除)
 
