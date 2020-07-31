@@ -215,7 +215,7 @@ MLP拟合特征变换函数![](https://latex.codecogs.com/gif.latex?%5Cvarphi)�
 * 数据集划分
 
   ```python
-train_graphs, test_graphs = train_test_split(graphs, test_size=0.1)
+	train_graphs, test_graphs = train_test_split(graphs, test_size=0.1)
   ```
   
 * 计算标签种类
