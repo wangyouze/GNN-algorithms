@@ -22,38 +22,34 @@ How Powerful are Graph Neural Networks?相信有很多人会和我一样在边�
 * **WL test**
 
   WL_test是判断两个Graph结构是否相同的有效方法，主要通过迭代以下步骤来判断Graph的同构性：
+	（初始化：将节点的id作为自身的标签。）
 
- 	（初始化：将节点的id作为自身的标签。）
+	1. 聚合：将邻居节点和自身的标签进行聚合。
+	
+	2. 更新节点标签：使用Hash表将节点聚合标签映射作为节点的的新标签。
+	
+	WL_test迭代过程如下图所示：
 
-​		1. 聚合：将邻居节点和自身的标签进行聚合。
-
-​		2. 更新节点标签：使用Hash表将节点聚合标签映射作为节点的的新标签。
-
-WL_test迭代过程如下图所示：
-
-   ![](WL_test.jpg)
+<img src="WL_test.jpg" width = "600" height = "500" alt="WL_test迭代过程" align=center />
 
    		(此图引用自知乎陈乐天的文章《Graph Neural Networks多强大？》阅读笔记 - 陈乐天的文章 - 知乎 https://zhuanlan.zhihu.com/p/62006729，如有侵权，请联系删除)
 
-​		上图a中的G图中节点1的邻居有节点4；节点2的邻居有节点3和节点5；节点3的邻居有节点2，节点4，节点5；节点4的邻居有节点1，节点3，节点5；节点5的邻居有节点2，节点3，节点4。
-
-​	（步骤1）聚合邻居节点和自身标签后的结果就是b图中的G。然后用Hash将聚合后的结果映射为一个新的标签，进行标签压缩，如图c。用压缩后的标签来替代之前的聚合结果，进行标签更新，如图d，G‘同理。
-
-​		对于Graph的特征表示，WL_test方法用迭代前后图中节点标签的个数作为Graph的表示特征，如图e所示。
-
+​	上图a中的G图中节点1的邻居有节点4；节点2的邻居有节点3和节点5；节点3的邻居有节点2，节点4，节点5；节点4的邻居有节点1，节点3，节点5；节点5的邻居有节点2，节点3，节点4。
+​	（步骤1）聚合邻居节点和自身标签后的结果就是b图中的G。然后用Hash将聚合后的结果映射为一个新的标签，进行标签压缩，如图c。用压缩后的标签来替代之前的聚合结果，进行标签更新（步骤二），如图d，G‘同理。
+​	对于Graph的特征表示，WL_test方法用迭代前后图中节点标签的个数作为Graph的表示特征，如图e所示。
 从上图我们可以看出WL_test的迭代过程和GNN的聚合过程非常相似，并且作者也证明了WL_test是图神经网络聚合邻域信息能力的上限。
 
 
 * **GIN节点更新**
 	作者提出如果GNN中的Aggregate,Combine和Readout函数是[单射](https://zh.wikipedia.org/wiki/%E5%8D%95%E5%B0%84%E3%80%81%E5%8F%8C%E5%B0%84%E4%B8%8E%E6%BB%A1%E5%B0%84)(即映射关系为一对一)，则GNN可以达到上限，和WL_test一样。
 
-	作者证明了当节点特征X可数时，将节点特征的聚合方式设置为sum，邻域特征与中心节点特征的融合系数设置为1+![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cepsilon)，会存在一个函数![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?f%28x%29)使得聚合函数为单射函数，即：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?h%28c%2CX%29%20%3D%20%281&plus;%5Cepsilon%20%29%5Ccdot%20f%28c%29%20&plus;%20%5Csum%20_%7Bx%20%5Cin%20X%7Df%28x%29)
+	作者证明了当节点特征X可数时，将节点特征的聚合方式设置为sum，邻域特征与中心节点特征的融合系数设置为1+![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cepsilon)，会存在一个函数![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?f%28x%29)使得聚合函数为单射函数，即：![加载公式](https://latex.codecogs.com/gif.latex?h%28c%2CX%29%20%3D%20%281&plus;%5Cepsilon%20%29%5Ccdot%20f%28c%29%20&plus;%20%5Csum%20_%7Bx%20%5Cin%20X%7Df%28x%29)
 
-	同时作者进一步证明对于任意的聚合函数![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?g%28c%2CX%29)在满足单射性的条件下可以分解为![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?g%28c%2CX%29%20%3D%20%5Cvarphi%28%281&plus;%5Cepsilon%20%29%5Ccdot%20f%28c%29%20&plus;%20%5Csum%20_%7Bx%20%5Cin%20X%7Df%28x%29%29)
+	同时作者进一步证明对于任意的聚合函数![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?g%28c%2CX%29)在满足单射性的条件下可以分解为![加载公式](https://latex.codecogs.com/gif.latex?g%28c%2CX%29%20%3D%20%5Cvarphi%28%281&plus;%5Cepsilon%20%29%5Ccdot%20f%28c%29%20&plus;%20%5Csum%20_%7Bx%20%5Cin%20X%7Df%28x%29%29)
 
-	然后用借助多层感知机（MLP）强大的拟合能力来学习上面公式中的![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cvarphi)和f，最后得到基于MLP+SUM 的GIN模型：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?h%5E%7B%28k%29%7D_v%20%3D%20MLP%5E%7B%28k%29%7D%28%281&plus;%5Cepsilon%20%5E%7B%28k%29%7D%29%5Ccdot%20h%5E%7B%28k-1%29%7D_v%20&plus;%20%5Csum%20_%7Bu%20%5Cin%20N%28u%29%7Dh%5E%7B%28k-1%29%7D_v%29)
+	然后用借助多层感知机（MLP）强大的拟合能力来学习上面公式中的![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cvarphi)和f，最后得到基于MLP+SUM 的GIN模型：![加载公式](https://latex.codecogs.com/gif.latex?h%5E%7B%28k%29%7D_v%20%3D%20MLP%5E%7B%28k%29%7D%28%281&plus;%5Cepsilon%20%5E%7B%28k%29%7D%29%5Ccdot%20h%5E%7B%28k-1%29%7D_v%20&plus;%20%5Csum%20_%7Bu%20%5Cin%20N%28u%29%7Dh%5E%7B%28k-1%29%7D_v%29)
 
-	对于每轮迭代产生的节点特征求和，然后拼接作为Graph的特征表示：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?h_G%20%3D%20CONCAT%28sum%28%28h_v%5E%7B%28k%29%7D%7Cv%5Cin%20G%29%29%7Ck%3D0%2C1%2C...%2CK%29)
+	对于每轮迭代产生的节点特征求和，然后拼接作为Graph的特征表示：![加载公式](https://latex.codecogs.com/gif.latex?h_G%20%3D%20CONCAT%28sum%28%28h_v%5E%7B%28k%29%7D%7Cv%5Cin%20G%29%29%7Ck%3D0%2C1%2C...%2CK%29)
 
 
 
@@ -101,7 +97,7 @@ pip install -U tf_geometric # 这会使用你自带的TensorFlow，注意你需�
 ### GIN的实现
 
 ***
-![](https://latex.codecogs.com/gif.latex?h_v%20%5E%7B%28k%29%7D%20%3D%20MLP%5E%7B%28k%29%7D%28%281&plus;%5Cepsilon%20%5E%7B%28k%29%7D%29%5Ccdot%20h_v%20%5E%7B%28k-1%29%7D&plus;%20%5Csum%20_%7Bu%20%5Cin%20N%28v%29%7Dh_u%20%5E%7B%28k-1%29%7D%29)
+![加载公式](https://latex.codecogs.com/gif.latex?h_v%20%5E%7B%28k%29%7D%20%3D%20MLP%5E%7B%28k%29%7D%28%281&plus;%5Cepsilon%20%5E%7B%28k%29%7D%29%5Ccdot%20h_v%20%5E%7B%28k-1%29%7D&plus;%20%5Csum%20_%7Bu%20%5Cin%20N%28v%29%7Dh_u%20%5E%7B%28k-1%29%7D%29)
 
 GIN的实现很简单。首先我们聚合中心节点的一阶邻域信息![](https://latex.codecogs.com/gif.latex?%5Csum%20_%7Bu%20%5Cin%20N%28v%29%7Dh_u%20%5E%7B%28k-1%29%7D)。tf_geometric提供了便捷的邻域信息聚合机制API。
 
@@ -114,7 +110,7 @@ GIN的实现很简单。首先我们聚合中心节点的一阶邻域信息![](h
     )
 ```
 
-然后计算![](https://latex.codecogs.com/gif.latex?%281&plus;%5Cepsilon%20%5E%7B%28k%29%7D%29%5Ccdot%20h_v%20%5E%7B%28k-1%29%7D&plus;%20%5Csum%20_%7Bu%20%5Cin%20N%28v%29%7Dh_u%20%5E%7B%28k-1%29%7D)，更新中心节点的特征表示。![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cepsilon) 可以设置为学习参数也可以设置为固定值。
+然后计算![正在加载公式](https://latex.codecogs.com/gif.latex?%281&plus;%5Cepsilon%20%5E%7B%28k%29%7D%29%5Ccdot%20h_v%20%5E%7B%28k-1%29%7D&plus;%20%5Csum%20_%7Bu%20%5Cin%20N%28v%29%7Dh_u%20%5E%7B%28k-1%29%7D)，更新中心节点的特征表示。![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cepsilon) 可以设置为学习参数也可以设置为固定值。
 
 ```python
 
@@ -194,7 +190,7 @@ MLP拟合特征变换函数![](https://latex.codecogs.com/gif.latex?%5Cvarphi)�
   ```
   对每一隐藏层的输出进行sum pooling,将5层的pooling结果进行拼接。
 
-  ![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?h_G%20%3D%20CONCAT%28sum%28%28h_v%5E%7B%28k%29%7D%7Cv%5Cin%20G%29%29%7Ck%3D0%2C1%2C...%2CK%29)
+  ![正在加载公式](https://latex.codecogs.com/gif.latex?h_G%20%3D%20CONCAT%28sum%28%28h_v%5E%7B%28k%29%7D%7Cv%5Cin%20G%29%29%7Ck%3D0%2C1%2C...%2CK%29)
 
   ```python
    h1 = tfg.nn.sum_pool(h1, node_graph_index)
