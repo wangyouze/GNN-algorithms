@@ -22,7 +22,14 @@
 
 ***
 
-![img](3E84F52A.gif)
+本人才疏学浅，如教程有任何不妥或者错误之处，欢迎加群或者开issue讨论。同时本群也欢迎志同道合之士加群共同探讨图神经网络。AI恒久远，GNN永流传。
 
-本人才疏学浅，如有任何不妥或者错误之处，欢迎留言或者开issue讨论。
+<div align=center>
+    <img src="GNN交流群二维码.png" width = "500" height = "500" alt="" align=center/>
+
+
+
+
+
+
 
