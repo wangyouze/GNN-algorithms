@@ -2,7 +2,7 @@
 
 ***
 
-当GCN如日中天的时候，大部分人并不知道GCN其实是对ChebNet的进一步简化与近似，ChebNet与GCN都属于谱域上定义的图卷积网络。本教程将教你如何用Tensorflow构建ChebNet模型进行节点分类任务。完整的代码可在Github中下载：
+当GCN如日中天的时候，大部分人并不知道GCN其实是对ChebyNet的进一步简化与近似，ChebyNet与GCN都属于谱域上定义的图卷积网络。本教程将教你如何用Tensorflow构建ChebyNet模型进行节点分类任务。完整的代码可在Github中下载：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_chebynet.py
 
 ### ChebNet简介
 
@@ -40,7 +40,7 @@
 
 **对上述推导过程不清楚的人可以参考我的博客**：https://www.jianshu.com/p/35212baf6671
 
-教程完整代码链接：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_chebnet.py
+教程完整代码链接：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_chebynet.py
 
 论文地址：https://arxiv.org/pdf/1606.09375.pdf
 
@@ -49,10 +49,10 @@
 ***
 
 * 开发环境
-* ChebNet的实现
+* ChebyNet的实现
 * 模型构建
-* ChebNet训练
-* ChebNet评估
+* ChebyNet训练
+* ChebyNet评估
 
 ### 开发环境
 
@@ -85,7 +85,7 @@
 
 * https://github.com/CrawlScript/tf_geometric
 
-### ChebNet的实现
+### ChebyNet的实现
 
 ***
 
@@ -129,7 +129,7 @@ norm_edge_index, norm_edge_weight = chebnet_norm_edge(edge_index, num_nodes, edg
 
 * 导入相关库
 
-  本教程使用的核心库是[tf_geometric](https://github.com/CrawlScript/tf_geometric)，我们用它来进行图数据导入、图数据预处理及图神经网络构建。ChebNet的具体实现已经在上面详细介绍，LaplacianMaxEigenvalue用来获取L阿普拉斯矩阵的最大特征值。另外我们后面会使用keras.metrics.Accuracy评估模型性能。
+  本教程使用的核心库是[tf_geometric](https://github.com/CrawlScript/tf_geometric)，我们用它来进行图数据导入、图数据预处理及图神经网络构建。ChebNet的具体实现已经在上面详细介绍，LaplacianMaxEigenvalue用来获取拉普拉斯矩阵的最大特征值。另外我们后面会使用keras.metrics.Accuracy评估模型性能。
 
   ~~~python
   import os
@@ -172,7 +172,7 @@ norm_edge_index, norm_edge_weight = chebnet_norm_edge(edge_index, num_nodes, edg
       return h
   ```
 
-### ChebNet训练
+### ChebyNet训练
 
 ***
 
@@ -217,7 +217,7 @@ for step in tqdm(range(1, 101)):
   
   ```
 
-### ChebNet评估
+### ChebyNet评估
 
 ***
 在评估模型性能的时候我们只需传入valid_mask或者test_mask，通过tf.gather函数就可以拿出验证集或测试集在模型上的预测结果与真实标签，用keras自带的keras.metrics.Accuracy计算准确率。
@@ -258,5 +258,5 @@ step = 100	loss = 0.07698118686676025	valid_acc = 0.7940000295639038	best_test_a
 
 教程中的完整代码链接：
 
-- demo_chebnet.py:https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_chebnet.py
+- demo_chebynet.py:https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_chebynet.py
 

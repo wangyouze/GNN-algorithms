@@ -15,7 +15,7 @@ How Powerful are Graph Neural Networks?相信有很多人会和我一样在边�
   
   2. Combine:将邻域特征与中心节点的特征融合，更新中心节点的特征。
   
-  3. 如果是图分类任务，需要把Graph中所有节点特征转换为Graph的特征表示。
+  3. Readout:如果是图分类任务，需要把Graph中所有节点特征转换为Graph的特征表示。
   
   上述方法都是基于经验主义，缺乏从理论的角度来分析GNN。GIN则是借助[Weisfeiler-Lehman(WL) test](http://www.jmlr.org/papers/volume12/shervashidze11a/shervashidze11a.pdf) 来分析GNN到底做了什么而变得如何powerful，在何种条件下GNN可以在图分类任务上和WL test一样强大。
   
@@ -31,8 +31,9 @@ How Powerful are Graph Neural Networks?相信有很多人会和我一样在边�
 	WL_test迭代过程如下图所示：
 
 <div align=center>
-<img src="WL_test.jpg" width = "600" height = "500" alt="WL_test迭代过程" align=center />
+<img src="WL_test.jpg" width = "500" height = "" alt="WL_test迭代过程" align=center />
 </div>
+
 
    		(此图引用自知乎陈乐天的文章《Graph Neural Networks多强大？》阅读笔记 - 陈乐天的文章 - 知乎 https://zhuanlan.zhihu.com/p/62006729，如有侵权，请联系删除)
 
@@ -43,9 +44,9 @@ How Powerful are Graph Neural Networks?相信有很多人会和我一样在边�
 
 
 * **GIN节点更新**
-	作者提出如果GNN中的Aggregate,Combine和Readout函数是[单射](https://zh.wikipedia.org/wiki/%E5%8D%95%E5%B0%84%E3%80%81%E5%8F%8C%E5%B0%84%E4%B8%8E%E6%BB%A1%E5%B0%84)(即映射关系为一对一)，则GNN可以达到上限，和WL_test一样。
+	作者提出如果GNN中的Aggregate,Combine和Readout函数是[单射](https://zh.wikipedia.org/wiki/%E5%8D%95%E5%B0%84%E3%80%81%E5%8F%8C%E5%B0%84%E4%B8%8E%E6%BB%A1%E5%B0%84)(即原像与像的映射关系为一对一)，则GNN可以达到上限，和WL_test一样。
 
-	作者证明了当节点特征X可数时，将节点特征的聚合方式设置为sum，邻域特征与中心节点特征的融合系数设置为1+![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cepsilon)，会存在一个函数![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?f%28x%29)使得聚合函数为单射函数，即：![加载公式](https://latex.codecogs.com/gif.latex?h%28c%2CX%29%20%3D%20%281&plus;%5Cepsilon%20%29%5Ccdot%20f%28c%29%20&plus;%20%5Csum%20_%7Bx%20%5Cin%20X%7Df%28x%29)
+	作者证明了当节点特征X可数时，将节点特征的聚合方式(Aggregate)设置为sum，邻域特征与中心节点特征的融合系数设置为1+![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cepsilon)，会存在一个函数![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?f%28x%29)使得聚合函数(Combine)为单射函数，即：![加载公式](https://latex.codecogs.com/gif.latex?h%28c%2CX%29%20%3D%20%281&plus;%5Cepsilon%20%29%5Ccdot%20f%28c%29%20&plus;%20%5Csum%20_%7Bx%20%5Cin%20X%7Df%28x%29)为单射。
 
 	同时作者进一步证明对于任意的聚合函数![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?g%28c%2CX%29)在满足单射性的条件下可以分解为![加载公式](https://latex.codecogs.com/gif.latex?g%28c%2CX%29%20%3D%20%5Cvarphi%28%281&plus;%5Cepsilon%20%29%5Ccdot%20f%28c%29%20&plus;%20%5Csum%20_%7Bx%20%5Cin%20X%7Df%28x%29%29)
 
@@ -151,10 +152,10 @@ MLP拟合特征变换函数![](https://latex.codecogs.com/gif.latex?%5Cvarphi)�
 * 我们选用论文中的生物数据集NCI1训练和评估模型性能。第一次加载NCI1数据集，预计需要花费几分钟时间。数据集第一次被预处理之后，tf_geometric会自动保存预处理的结果，以便下一次调用。对于一个TU dataset会包含节点标签，节点属性等，每个graph的处理结果会被以字典形式保存，多个图的预处理结果以list的形式返回。
 
   ```python
-  graph_dicts = tfg.datasets.TUDataset("COLLAB").load_data()
+  graph_dicts = tfg.datasets.TUDataset("NCI1").load_data()
   ```
   
-* 用数据构建Graph Object，即图模型输入的三要素：节点特征，边连接信息以及标签。GIN的目标是当模型不依赖输入的节点特征时，如何学习学习网络的拓扑结构。因此对于生物数据集NCI1，我们把节点的类别标签用one_hot表示后作为输入特征。
+* 自己用数据构建Graph Object，即图模型输入的三要素：节点特征，边连接信息以及标签。GIN的目标是当模型不依赖于输入的节点特征时，学习网络的拓扑结构。因此对于生物数据集NCI1，我们把节点的类别标签用one_hot表示后作为输入特征（convert_node_labels_to_one_hot将节点标签转换为节点特征，十分简单，可在源码中查看该函数的实现）。
 
   ```python
   def construct_graph(graph_dict):
@@ -169,44 +170,56 @@ MLP拟合特征变换函数![](https://latex.codecogs.com/gif.latex?%5Cvarphi)�
 
   
 
-* 定义模型。根据论文描述，我们的模型有五层GIN作为隐藏层，每个隐藏层后用[Batch_normalization](https://www.jianshu.com/p/a6e400a3887a)对数据进行归一化(抑制梯度消失和梯度爆炸)。
+* 定义模型。根据论文描述，我们的模型有五层GIN作为隐藏层，MLP设置为2层来学习特征变换![](https://latex.codecogs.com/gif.latex?%5Cvarphi)和f，每个隐藏层后用[Batch_normalization](https://www.jianshu.com/p/a6e400a3887a)对数据进行归一化(抑制梯度消失和梯度爆炸)。
 
   ```python
-  def call(self, inputs, training=False, mask=None):
+   class GINPoolNetwork(keras.Model):
+      def __init__(self, num_gins, units, num_classes, *args, **kwargs):
+          super().__init__(*args, **kwargs)
+  
+          self.gins = [
+              tfg.layers.GIN(
+                  keras.Sequential([
+                      keras.layers.Dense(units, activation=tf.nn.relu),
+                      keras.layers.Dense(units),
+                      keras.layers.BatchNormalization()
+                  ])
+              )
+              for _ in range(num_gins)  # num_gins blocks
+          ]
+  
+          self.mlp = keras.Sequential([
+              keras.layers.Dense(128, activation=tf.nn.relu),
+              keras.layers.Dropout(0.3),
+              keras.layers.Dense(num_classes)
+        ])
+  
+    def call(self, inputs, training=False, mask=None):
+  
           if len(inputs) == 4:
               x, edge_index, edge_weight, node_graph_index = inputs
           else:
-              x, edge_index, _, node_graph_index = inputs
+              x, edge_index, node_graph_index = inputs
               edge_weight = None
   
-          h1 = self.gin0([x, edge_index, edge_weight])
-          h2 = self.bn1(h1)
-          h2 = self.gin1([h2, edge_index, edge_weight])
-          h3 = self.bn1(h2)
-          h3 = self.gin2([h3, edge_index, edge_weight])
-          h4 = self.bn2(h3)
-          h4 = self.gin3([h4, edge_index, edge_weight])
-          h5 = self.bn3(h4)
-          h5 = self.gin4([h5, edge_index, edge_weight])
-          h5 = self.bn3(h5)
+          hidden_outputs = []
+          h = x
+  
+          for gin in self.gins:
+              h = gin([h, edge_index, edge_weight], training=training)
+            hidden_outputs.append(h)
   ```
-  对每一隐藏层的输出进行sum pooling,将5层的pooling结果进行拼接。
-
+  对每一隐藏层的输出进行sum pooling，将5层的pooling结果拼接后进行非线性变换输出。
+  
   ![正在加载公式](https://latex.codecogs.com/gif.latex?h_G%20%3D%20CONCAT%28sum%28%28h_v%5E%7B%28k%29%7D%7Cv%5Cin%20G%29%29%7Ck%3D0%2C1%2C...%2CK%29)
-
+  
   ```python
-   h1 = tfg.nn.sum_pool(h1, node_graph_index)
-          h2 = tfg.nn.sum_pool(h2, node_graph_index)
-          h3 = tfg.nn.sum_pool(h3, node_graph_index)
-          h4 = tfg.nn.sum_pool(h4, node_graph_index)
-          h5 = tfg.nn.sum_pool(h5, node_graph_index)
-  
-          h = tf.concat((h1, h2, h3, h4, h5), axis=-1)
-          out = self.mlp(h, training=training)
-  
-          return out
+   		h = tf.concat(hidden_outputs, axis=-1)
+          h = tfg.nn.sum_pool(h, node_graph_index)
+          logits = self.mlp(h, training=training)
+          return logits
   ```
-
+  
   
 
 ### GIN训练
@@ -230,7 +243,7 @@ MLP拟合特征变换函数![](https://latex.codecogs.com/gif.latex?%5Cvarphi)�
   model = GIN(32)
   ```
 
-* 模型的训练与其他基于Tensorflow框架的模型训练基本一致，主要步骤有定义优化器，计算误差与梯度，反向传播等。我们将训练集中的Graphs以batch的形式输入模型进行训练，对于Graphs的划分可以调用我们tf_geometric中的函数create_graph_generator。
+* 模型的训练与其他基于Tensorflow框架的模型训练基本一致，主要步骤有定义优化器，计算误差与梯度，反向传播等。我们将训练集中的graphs以batch的形式输入模型进行训练，对于graphs的划分可以调用我们tf_geometric中的函数create_graph_generator。
   
   ```python
   optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
