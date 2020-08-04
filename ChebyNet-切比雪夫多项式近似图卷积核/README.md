@@ -4,7 +4,7 @@
 
 当GCN如日中天的时候，大部分人并不知道GCN其实是对ChebyNet的进一步简化与近似，ChebyNet与GCN都属于谱域上定义的图卷积网络。本教程将教你如何用Tensorflow构建ChebyNet模型进行节点分类任务。完整的代码可在Github中下载：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_chebynet.py
 
-### ChebNet简介
+### ChebyNet简介
 
 ***
 
