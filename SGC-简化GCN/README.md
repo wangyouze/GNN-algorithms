@@ -17,21 +17,21 @@ SGC是GCN的变体之一，全称[Simplifying Graph Convolutional Networks](http
 * GCN做节点分类任务时：
 
 1. 对邻接矩阵进行归一化并且添加自环：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?S%20%3D%20D%5E%7B-0.5%7D%5Chat%7BA%7DD%5E%7B-0.5%7D)
-2. 对输入的节点特征进行平滑处理：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?H%5Ek%20%3D%20SH%5E%7Bk-1%7D)
-3. 对节点特征进行非线性转换：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Chat%7BH%7D%5Ek%20%3D%20ReLU%28H%5Ek%5Ctheta%5Ek%29)
+2. 对输入的节点特征进行平滑处理：![](https://latex.codecogs.com/gif.latex?H%5Ek%20%3D%20SH%5E%7Bk-1%7D%20%3D%20D%5E%7B-0.5%7D%5Chat%20A%20D%5E%7B-0.5%7DH%5E%7Bk-1%7D)
+3. 对节点特征进行非线性转换：![](https://latex.codecogs.com/gif.latex?%5Chat%20H%5Ek%20%3D%5Csigma%28H%5Ek%20%5Ctheta%20%5Ek%29%20%3D%20%5Csigma%28D%5E%7B-0.5%7D%5Chat%20A%20D%5E%7B-0.5%7DH%5E%7Bk-1%7D%5Ctheta%20%5Ek%29%20%3D%5Csigma%28%20D%5E%7B-0.5%7D%5Chat%20A%20D%5E%7B-0.5%7DH%5E%7Bk-1%7DW%20%5Ek%29)
 
-所以对于节点分类任务，一个K层的GCN可以表示为：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?Y%20%3D%20softmax%28SH%5E%7Bk-1%7D%5Ctheta%5Ek%29)
+所以对于节点分类任务，一个K层的GCN可以表示为：![](https://latex.codecogs.com/gif.latex?Y%20%3D%20softmax%28SH%5E%7Bk-1%7DW%5Ek%29)
 
 * SGC移除了GCN每层之间的激活函数，将原先的非线性变换简化为线性变换，因此SGC在做节点分类任务时：
 
 1. 对邻接矩阵进行归一化并且添加自环：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?S%20%3D%20D%5E%7B-0.5%7D%5Chat%7BA%7DD%5E%7B-0.5%7D)
 
-2. 对输入的节点特征进行平滑处理：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?H%5Ek%20%3D%20SH%5E%7Bk-1%7D)
-3. 对节点特征进行线性转换：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Chat%7BH%5Ek%7D%20%3D%20H%5Ek%5Ctheta%20%5Ek%20%3D%20SH%5E%7Bk-1%7D%5Ctheta%20%5Ek%20%3D%20SSH%5E%7Bk-2%7D%5Ctheta%20%5E%7Bk-1%7D%5Ctheta%5Ek%20%3D%20SS...X%5Ctheta%20%5E1...%5Ctheta%20%5Ek)
+2. 对输入的节点特征进行平滑处理：![](https://latex.codecogs.com/gif.latex?H%5Ek%20%3D%20SH%5E%7Bk-1%7D%20%3D%20D%5E%7B-0.5%7D%5Chat%20A%20D%5E%7B-0.5%7DH%5E%7Bk-1%7D)
+3. 对节点特征进行**线性转换**：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Chat%7BH%5Ek%7D%20%3D%20H%5Ek%5Ctheta%20%5Ek%20%3D%20SH%5E%7Bk-1%7D%5Ctheta%20%5Ek%20%3D%20SSH%5E%7Bk-2%7D%5Ctheta%20%5E%7Bk-1%7D%5Ctheta%5Ek%20%3D%20SS...X%5Ctheta%20%5E1...%5Ctheta%20%5Ek)
 
 所以对于节点分类任务，一个K层的SGC可以表示为![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?Y%20%3D%20softmax%28SS...X%5Ctheta%20%5E1...%5Ctheta%20%5Ek%29)，简写为
 
-![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?Y%20%3D%20softmax%28S%5EkX%5Ctheta%29)
+![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?Y%20%3D%20softmax%28S%5EkX%20%5Ctheta%29%20%3D%20softmax%28S%5EkX%20W%29)
 
 SGC中的![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?S%5Ek)可以提前计算，大大减少了计算量。
 
@@ -225,3 +225,4 @@ step = 100	loss = 0.967261791229248	valid_acc = 0.7919999957084656	test_acc = 0.
 教程中的完整代码链接：
 
 * demo_sgc.py：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_sgc.py
+
