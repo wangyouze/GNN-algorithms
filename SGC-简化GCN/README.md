@@ -90,7 +90,7 @@ SGC中的![This is the rendered form of the equation. You can not edit this dire
      updated_edge_index, normed_edge_weight = gcn_norm_edge(edge_index, x.shape[0], edge_weight,renorm, improved, cache)
 ```
 
-计算![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?S%5EK)，扩大模型的感受野，aggregator_neighbor聚合一阶邻居节点信息。
+计算![.](https://latex.codecogs.com/gif.latex?S%5EkX)，扩大模型的感受野，aggregator_neighbor聚合一阶邻居节点信息，迭代聚合K次，相当于聚合了距离中心节点k-hop的邻域信息。
 
 ```python
  h = x
@@ -105,7 +105,7 @@ SGC中的![This is the rendered form of the equation. You can not edit this dire
         )
 ```
 
-对上面的结果进行线性变换，返回计算结果：
+对上面的聚合结果进行线性变换，即计算![.](https://latex.codecogs.com/gif.latex?S%5EKXW)，然后返回计算结果：
 
 ```python
 h = h @ kernel
@@ -115,7 +115,7 @@ h = h @ kernel
     return h
 ```
 
-以上我们实现了SGC中的![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?S%5EKX%5Ctheta)部分，现在我们只需要在模型的最后一层的输出上添加softmax激活函数（为了获得概率输出）就可以进行节点分类了。
+以上我们实现了SGC中的![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?S%5EKXW)部分，现在我们只需要在模型的最后一层的输出上添加softmax激活函数（为了获得概率输出）就可以进行节点分类了。
 
 ### 模型构建
 
