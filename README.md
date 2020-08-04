@@ -8,7 +8,7 @@
 ***
 
 1. [图卷积网络的前世今生](https://github.com/wangyouze/GNN-algorithms/tree/master/GCN%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F)
-2. [切比雪夫显神威—ChebNet](https://github.com/wangyouze/GNN-algorithms/tree/master/chebNet-%E5%88%87%E6%AF%94%E9%9B%AA%E5%A4%AB%E5%A4%9A%E9%A1%B9%E5%BC%8F%E8%BF%91%E4%BC%BC%E5%9B%BE%E5%8D%B7%E7%A7%AF%E6%A0%B8)
+2. [切比雪夫显神威—ChebyNet](https://github.com/wangyouze/GNN-algorithms/tree/master/ChebyNet-%E5%88%87%E6%AF%94%E9%9B%AA%E5%A4%AB%E5%A4%9A%E9%A1%B9%E5%BC%8F%E8%BF%91%E4%BC%BC%E5%9B%BE%E5%8D%B7%E7%A7%AF%E6%A0%B8)
 3. [删繁就简GCN—SGC](https://github.com/wangyouze/GNN-algorithms/tree/master/SGC-%E7%AE%80%E5%8C%96GCN)
 4. [多核卷积拓扑图—TAGCN](https://github.com/wangyouze/GNN-algorithms/tree/master/TAGCN-%E9%83%A8%E5%88%86%E8%BF%98%E5%8E%9FGCN%E5%AF%B9%E5%8D%B7%E7%A7%AF%E6%A0%B8%E7%9A%84%E7%AE%80%E5%8C%96)
 5. [归纳学习采样聚合—GraphSAGE](https://github.com/wangyouze/GNN-algorithms/tree/master/GraphSAGE-%E5%AD%A6%E4%B9%A0%E8%81%9A%E5%90%88%E5%87%BD%E6%95%B0)
