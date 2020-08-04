@@ -26,7 +26,7 @@
 
   第二代GCN直接对拉普拉斯矩阵进行变换，不再需要特征分解这一耗时大户。
 
-* ChebNet在第二代GCN的基础上用ChebShev多项式展开对卷积核进行近似，即令![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cbegin%7Bcases%7D%20g_%20%5Ctheta%20%28%5CLambda%20%29%20%5Capprox%20%5Csum_%7Bk%3D0%7D%5E%7BK-1%7D%5Ctheta%20_%7Bk%7DT_k%28%5Chat%20%5CLambda%29%5C%5C%20%5Chat%20%5CLambda%20%3D%20%5Cfrac%7B2%7D%7B%5Clambda%20_%7Bmax%7D%7D%5CLambda%20-%20I_N%20%5Cend%7Bcases%7D)
+* ChebNet在第二代GCN的基础上用ChebyShev多项式展开对卷积核进行近似，即令![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cbegin%7Bcases%7D%20g_%20%5Ctheta%20%28%5CLambda%20%29%20%5Capprox%20%5Csum_%7Bk%3D0%7D%5E%7BK-1%7D%5Ctheta%20_%7Bk%7DT_k%28%5Chat%20%5CLambda%29%5C%5C%20%5Chat%20%5CLambda%20%3D%20%5Cfrac%7B2%7D%7B%5Clambda%20_%7Bmax%7D%7D%5CLambda%20-%20I_N%20%5Cend%7Bcases%7D)
 
   切比雪夫多项式的递归定义：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cbegin%7Bcases%7D%20T_0%28x%29%20%3D%201%5C%5C%20T_1%28x%29%20%3D%20x%5C%5C%20T_%7Bn&plus;1%7D%28x%29%20%3D%202xT_n%28x%29%20-%20T_%7Bn-1%7D%28x%29%20%5Cend%7Bcases%7D)
 
@@ -89,7 +89,7 @@
 
 ***
 
-对图的邻接矩阵进行归一化处理得到拉普拉斯矩阵（归一化的方式有![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cbegin%7Bcases%7D%20L%20%3D%20D%20-A%5C%5C%20L%5E%7Bsym%7D%20%3D%20D%5E%7B-1/2%7DLD%5E%7B-1/2%7D%5C%5C%20L%5E%7Brw%7D%20%3D%20D%5E%7B-1%7DL%20%5Cend%7Bcases%7D)），以及根据得到的归一化的拉普拉斯矩阵计算![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Chat%20L%20%3D%20%5Cfrac%7B2%7D%7B%5Clambda%20_%7Bmax%7D%7DL%20-%20I_N)。chebnet_norm_edge的具体实现请看[完整代码](https://github.com/CrawlScript/tf_geometric/blob/master/tf_geometric/nn/conv/chebnet.py)
+对图的邻接矩阵进行归一化处理得到拉普拉斯矩阵（归一化的方式有![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Cbegin%7Bcases%7D%20L%20%3D%20D%20-A%5C%5C%20L%5E%7Bsym%7D%20%3D%20D%5E%7B-1/2%7DLD%5E%7B-1/2%7D%5C%5C%20L%5E%7Brw%7D%20%3D%20D%5E%7B-1%7DL%20%5Cend%7Bcases%7D)），以及根据得到的归一化的拉普拉斯矩阵计算![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?%5Chat%20L%20%3D%20%5Cfrac%7B2%7D%7B%5Clambda%20_%7Bmax%7D%7DL%20-%20I_N)。re-scaled特征值对角矩阵，将其变换到[-1,1]之间。chebynet_norm_edge的具体实现请看[完整代码](https://github.com/CrawlScript/tf_geometric/blob/master/tf_geometric/nn/conv/chebnet.py)
 
 ```python
 num_nodes = x.shape[0]
@@ -176,7 +176,7 @@ norm_edge_index, norm_edge_weight = chebnet_norm_edge(edge_index, num_nodes, edg
 
 ***
 
-模型的训练与其他基于Tensorflow框架的模型训练基本一致，主要步骤有定义优化器，计算误差与梯度，反向传播等。
+模型的训练与其他基于Tensorflow框架的模型训练基本一致，主要步骤有定义优化器，计算误差与梯度，反向传播等，然后分别计算验证集和测试集上的准确率。
 
 ```python
 optimizer = tf.keras.optimizers.Adam(learning_rate=1e-2)
