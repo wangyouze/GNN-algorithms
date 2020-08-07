@@ -14,7 +14,7 @@ TAGCN是GCN的变体之一，全称[TOPOLOGY ADAPTIVE GRAPH CONVOLUTIONAL NETWOR
 
 1. 对邻接矩阵进行归一化处理：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?A%20%3D%20D%5E%7B-0.5%7D%28I&plus;A%29D%5E%7B-0.5%7D)
 
-2. 多项式卷积核，![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?g_%7Bf%2Ck%7D%5E%7B%28l%29%7D)是多项式系数，相比于GCN，TAGCN保留了超参数K：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?G%5E%7B%28l%29%7D_f%20%3D%20%5Csum%20_%7Bk%3D0%7D%5EKg_%7Bf%2Ck%7D%5E%7B%28l%29%7DA%5Ek)
+2. ![](https://latex.codecogs.com/gif.latex?G_f%5E%7B%28l%29%7D)多项式卷积核，![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?g_%7Bf%2Ck%7D%5E%7B%28l%29%7D)是多项式系数，相比于GCN，TAGCN保留了超参数K：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?G%5E%7B%28l%29%7D_f%20%3D%20%5Csum%20_%7Bk%3D0%7D%5EKg_%7Bf%2Ck%7D%5E%7B%28l%29%7DA%5Ek)
 
 3. k个卷积核在图结构数据上提取特征，进行线性组合：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?y_f%5E%7B%28l%29%7D%20%3D%20G%5E%7B%28l%29%7D_fx_c%5E%7B%28l%29%7D%20&plus;%20b_f1_%7BN_l%7D)
 4. 仿照CNN结构，添加非线性操作：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?x_f%5E%7Bl&plus;1%7D%20%3D%20%5Csigma%28%7By_f%20%5E%7B%28l%29%7D%7D%29)
@@ -65,14 +65,14 @@ pip install -U tf_geometric # 这会使用你自带的TensorFlow，注意你需�
 ### TAGCN的实现
 
 ***
-xs用来储存K阶Chebyshev多项式，gcn_norm_edge对图的邻接矩阵进行对称归一化处理：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?D%5E%7B-0.5%7D%28I&plus;A%29D%5E%7B-0.5%7D)
+首先我们对图的邻接矩阵添加自环，进行归一化处理。其中xs用来存储k个多项式卷积核提取的feature map：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?D%5E%7B-0.5%7D%28I&plus;A%29D%5E%7B-0.5%7D)
 ```python
 xs = [x]
     updated_edge_index, normed_edge_weight = gcn_norm_edge(edge_index, x.shape[0], edge_weight,
                                                            renorm, improved, cache)
 ```
 
-分别计算K阶Chebyshev多项式中的每一项，并将其存储于xs中：
+分别计算k个多项式卷积核提取图节点的邻域信息，即计算k阶多项式，并以此将结果存储到xs中：
 
 ```python
 for k in range(K):
@@ -86,7 +86,7 @@ for k in range(K):
         xs.append(h)
 ```
 
-将K阶Chebyshev多项式加权求和：
+将K个多项式卷积核提取的feature_map拼接，然后线性变换输出结果：
 
 ```python
 h = tf.concat(xs, axis=-1)
