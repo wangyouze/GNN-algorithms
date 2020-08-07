@@ -10,9 +10,6 @@ Graph Attention Networks（GAT）发表在ICLR2018上，利用masked self-attent
 
 GCN通过图的拉普拉斯矩阵来聚合邻居节点的特征信息，这种方式和图本身的结构紧密相关，这限制了GCN在训练时未见的图结构上的泛化能力。GAT利用注意力机制来对邻居节点特征加权求和，从而聚合邻域信息，GAT完全摆脱了图结构的束缚，是一种归纳式学习方式。
 
-<div align=center>
-	<img src="gat.png" width="">
-</div>
 
 GAT中的attention是self-attention，即Q(Query)，K(Key)，V(value)三个矩阵均来自统一输入。和所有的Attention机制一样，GAT的计算也分两步走：
 
