@@ -47,8 +47,8 @@ GNN引入Attention机制有三大好处：
 * 开发环境
 * GAT的实现
 * 模型构建
-* TAGCN训练
-* TAGCN评估 
+* GAT训练
+* GAT评估 
 
 ### 开发环境
 ***
