@@ -2,7 +2,7 @@
 
 ***
 
-本教程将详细讲解如何用Tensorflow构建Graph Attention Networks（GAT)模型在Cora数据集上进行节点分类任务。完整代码可以在Github中进行下载：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_gat.py
+Graph Attention Networks（GAT）发表在ICLR2018上，利用masked self-attention 来学习中心节点与邻居节点之间的注意力权重，根据权重大小聚合邻居节点的空间信息来更新中心节点的特征表示，从而解决了基于卷积或者多项式近似卷积核等方法的固有缺陷。本教程将详细讲解如何用Tensorflow构建Graph Attention  Networks（GAT)模型在Cora数据集上进行节点分类任务。完整代码可以在Github中进行下载:https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_gat.py
 
 ### GAT简介
 
@@ -16,11 +16,27 @@ GCN通过图的拉普拉斯矩阵来聚合邻居节点的特征信息，这种�
 
 GAT中的attention是self-attention，即Q(Query)，K(Key)，V(value)三个矩阵均来自统一输入。和所有的Attention机制一样，GAT的计算也分两步走：
 
-1. 计算注意力系数。对于中心节点，我们需要逐个计算它与它的邻居节点之间的注意力系数：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?e_%7Bij%7D%20%3D%20a%28%5BWh_i%20%5Cleft%20%7C%20%5Cright%20%7CWh_j%5D%29%2Cj%20%5Cin%20N_i)。具体来说，首先我们要计算中心节点Q向量与其邻居节点K向量之间的点乘，然后为了防止其结果过大，会除以一个尺度 ![.](https://latex.codecogs.com/gif.latex?%5Csqrt%7Bd_k%7D)，其中 ![](https://latex.codecogs.com/gif.latex?d_k) 为一个query（key向量）的维度。再利用Softmax操作将其结果归一化为概率分布。该操作可以表示为 ![](https://latex.codecogs.com/gif.latex?%5Calpha%20_%7Bij%7D%20%3D%20softmax%28%5Cfrac%7BQK%5ET%7D%7B%5Csqrt%20d_k%7D%29)。
+1. 计算注意力系数。
 
-2. 通过加权求和的方式聚合节点信息。根据每个邻居节点对中心节点归一化后的注意力系数，对邻居节点的特征V进行线性组合作为中心节点的特征表示：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?h_i%5E%7B%27%7D%20%3D%20%5Csigma%28%5Csum%20_%7Bj%5Cin%20N_i%7D%5Calpha_%7Bij%7DWh_j%29)
+   <div align=center>
+   	<img src="attention.png" width="">
+   </div>
 
-   由于使用了multi-head attention，我们将K个head下的节点表示进行拼接作为最终的节点表示：
+   对于中心节点，我们需要逐个计算它与它的邻居节点之间的注意力系数：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?e_%7Bij%7D%20%3D%20a%28%5BWh_i%20%5Cleft%20%7C%20%5Cright%20%7CWh_j%5D%29%2Cj%20%5Cin%20N_i)。
+
+   首先对节点特征进行变换或者说是增加维度（常见的特征增强手段），然后将变换后的中心节点特征逐个与其邻居节点特征拼接后输入一个单层的神经网络a,所得结果就是中心节点与该邻居节点之间的注意力系数，当然，注意力系数还需要经过softmax归一化，将其转换为概率分布。
+
+   具体来说，首先我们要计算中心节点Q向量与其邻居节点K向量之间的点乘，然后为了防止其结果过大，会除以一个尺度 ![.](https://latex.codecogs.com/gif.latex?%5Csqrt%7Bd_k%7D)，其中 ![](https://latex.codecogs.com/gif.latex?d_k) 为一个query（key向量）的维度。再利用Softmax操作将其结果归一化为概率分布。该操作可以表示为 ![](https://latex.codecogs.com/gif.latex?%5Calpha%20_%7Bij%7D%20%3D%20softmax%28%5Cfrac%7BQK%5ET%7D%7B%5Csqrt%20d_k%7D%29)。
+
+2. 通过加权求和的方式聚合节点信息。
+
+   <div align=center>   
+       <img src="aggregator.png" width="">
+   </div>
+
+   根据中心节点与邻居节点归一化后的注意力系数，对邻居节点的特征V进行线性组合作为中心节点的特征表示：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?h_i%5E%7B%27%7D%20%3D%20%5Csigma%28%5Csum%20_%7Bj%5Cin%20N_i%7D%5Calpha_%7Bij%7DWh_j%29)
+
+   俗话说“一个篱笆三个桩，一个好汉三个帮”，GAT也秉承了这种思想，采用多头注意力机制（multi-head attention）来捕获邻居节点在不同的方面对中心节点影响力的强弱。我们将K 个head分别提取的节点特征表示进行拼接作为最终的节点表示：
 
 ![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?h_i%5E%7B%27%7D%20%3D%20%5Cleft%20%7C%20%5Cright%20%7C_%7Bk%3D1%7D%5EK%20%5Csigma%28%5Csum%20_%7Bj%5Cin%20N_i%7D%5Calpha_%7Bij%7D%5EkW%5Ekh_j%29)
 
@@ -39,6 +55,8 @@ GNN引入Attention机制有三大好处：
 教程代码下载链接：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_gat.py
 
 论文下载地址链接：https://arxiv.org/pdf/1710.10903.pdf
+
+文献参考：https://zhuanlan.zhihu.com/p/81350196
 
 ### 教程目录
 
@@ -77,7 +95,7 @@ pip install -U tf_geometric # 这会使用你自带的TensorFlow，注意你需�
 
 ***
 
-self.attention，计算中心节点与其邻居节点的注意力系数。首先添加自环。
+首先添加自环，即添加节点自身之间的连接边，这样中心节点在稍后的特征更新中也会计算自己原先的特征。
 
 ```python
 	num_nodes = x.shape[0]
@@ -101,7 +119,7 @@ row为中心节点序列，col为一阶邻居节点序列
     
     V = x @ kernel
 ```
-由于是multi-head attention，所以Q，K，V也需要划分为num_heads，即每一个head都有自己相应的Q，K，V。最后将Q，K矩阵相乘（每一个中心节点的特征向量与其邻居节点的特征向量相乘）得到的attention_score，通过segmen_softmax进行归一化操作。
+由于是multi-head attention，所以Q，K，V也需要划分为num_heads份，即每一个head都有自己相应的Q，K，V。相应的，为了计算方便，将图节点连接关系矩阵edge_index也进行扩展，每一个head都要对应整个graph。最后将Q，K矩阵相乘（每一个中心节点的特征向量与其邻居节点的特征向量相乘）得到的attention_score，通过segmen_softmax进行归一化操作。
 
 ```python
 
@@ -114,7 +132,7 @@ row为中心节点序列，col为一阶邻居节点序列
     att_score_ = tf.reduce_sum(Q_ * K_, axis=-1)
     normed_att_score_ = segment_softmax(att_score_, edge_index_[0], num_nodes * num_heads)
 ```
-将归一化后的attention系数当做边的权重来对邻居节点进行加权求和操作，从而更新节点特征。由于是multi-head attention，所以将同一个节点在每一个attention下的节点特征拼接输出。
+将归一化后的attention系数当做边的权重来对邻居节点进行加权求和操作，从而更新节点特征。由于是multi-head attention，所以将同一个节点在每一个head attention下的节点特征拼接输出。
 ```python
 h_ = aggregate_neighbors(
         V_, edge_index_, normed_att_score_,
@@ -157,7 +175,7 @@ h_ = aggregate_neighbors(
   graph, (train_index, valid_index, test_index) = CoraDataset().load_data()
   ```
 
-* 定义图模型。我们构建两层GAT，即GAT只聚合2-hop的邻居特征，Dropout层用来缓解模型过拟合。
+* 定义图模型。我们构建两层GAT，即GAT只聚合2-hop的邻居特征，Dropout层用来缓解模型过拟合(小数据集上尤其管用)。
 
   ```python
   gat0 = tfg.layers.GAT(64, activation=tf.nn.relu, num_heads=8, drop_rate=drop_rate, attention_units=8)
@@ -174,9 +192,8 @@ h_ = aggregate_neighbors(
   ```
 
 ### GAT训练
-模型的训练与其他基于Tensorflow框架的模型训练基本一致，主要步骤有定义优化器，计算误差与梯度，反向传播等。
 ***
-
+模型的训练与其他基于Tensorflow框架的模型训练基本一致，主要步骤有定义优化器，计算误差与梯度，反向传播等。
 ```python
 optimizer = tf.keras.optimizers.Adam(learning_rate=5e-3)
 
@@ -234,7 +251,7 @@ def evaluate(mask):
 ### 运行结果
 
 ***
-
+模型运行结果与论文中的结果一致
 ```
 step = 20	loss = 1.784507393836975	accuracy = 0.7839999794960022
 step = 40	loss = 1.5089114904403687	accuracy = 0.800000011920929
