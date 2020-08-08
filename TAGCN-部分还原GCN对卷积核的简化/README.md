@@ -8,9 +8,9 @@
 
 ***
 
-TAGCN是GCN的变体之一，全称[TOPOLOGY ADAPTIVE GRAPH CONVOLUTIONAL NETWORKS](https://arxiv.org/pdf/1710.10370.pdf)（TAGCN)。相比于GCN对卷积核进行Chebyshev多项式近似后取k=1，TAGCN将k保留下来作为超参数。TAGCN在用多项式近似卷积核的时候，保留多项式的阶数k作为超参，将多项式卷积核视为尺寸是1到K的k个卷积核的集合，类似于GoogleNet中每一个卷积层都有大小不同的卷积核提取特征。
+TAGCN是GCN的变体之一，全称[TOPOLOGY ADAPTIVE GRAPH CONVOLUTIONAL NETWORKS](https://arxiv.org/pdf/1710.10370.pdf)（TAGCN)。相比于GCN对卷积核进行Chebyshev多项式近似后取k=1，TAGCN用k个图卷积核来提取不同尺寸的局部特征，并且将k保留下来作为超参数。其中的K个卷积核的感受野分别为1到K，类似于GoogleNet中每一个卷积层都有大小不同的卷积核提取特征。
 
-从TAGCN卷积公式上看：
+TAGCN的卷积过程如下：
 
 1. 对邻接矩阵进行归一化处理：![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?A%20%3D%20D%5E%7B-0.5%7D%28I&plus;A%29D%5E%7B-0.5%7D)
 
@@ -24,8 +24,15 @@ TAGCN是GCN的变体之一，全称[TOPOLOGY ADAPTIVE GRAPH CONVOLUTIONAL NETWOR
 <div align=center>
 	<img src="k阶多项式.png" width="">
 </div>
-
 ![This is the rendered form of the equation. You can not edit this directly. Right click will give you the option to save the image, and in most browsers you can drag the image onto your desktop or another program.](https://latex.codecogs.com/gif.latex?y%5El_f%20%3D%20g%5El_%7Bf%2C1%7DAX%5El%20&plus;%20g%5El_%7Bf%2C2%7DA%5E2X%5El%20&plus;%20g%5El_%7Bf%2C3%7DA%5E3X%5El%20&plus;%20b_f1_%7BN_l%7D)
+
+总结：
+
+1. TAGCN仿照CNN在每一层使用K个图卷积核分别提取不同尺寸的局部特征，避免了之前对卷积核进行近似而不能完整，充分的提取图信息的缺陷，提高了模型的表达能力。
+
+2. TAGCN可以用于无向图和有向图，由于只需计算邻接矩阵的系数，降低了计算复杂度。
+
+   
 
 * 教程完整代码链接：https://github.com/CrawlScript/tf_geometric/blob/master/demo/demo_tagcn.py
 * 论文地址：https://arxiv.org/pdf/1710.10370.pdf
